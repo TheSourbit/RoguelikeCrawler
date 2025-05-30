@@ -1,0 +1,10 @@
+# Ignore dotfiles, except git related
+.*
+!.git*
+
+# Keeping .editorconfig
+!.editorconfig
+
+# Godot 4.1+ specific ignores
+/android/
+*.translation

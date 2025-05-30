@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://v0d7wukibprx"]
+
+[ext_resource type="Script" uid="uid://2wdfqlx0ngnk" path="res://Scripts/Gameplay/Gameplay.cs" id="1_pynvn"]
+[ext_resource type="Script" uid="uid://dtwiareqtqv5n" path="res://Scripts/Gameplay/GameplayCamera.cs" id="2_r20ig"]
+
+[node name="Gameplay" type="Node3D" node_paths=PackedStringArray("Camera")]
+script = ExtResource("1_pynvn")
+Camera = NodePath("GameplayCamera")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.903273, -0.247216, 0.350689, 0.00342102, 0.821452, 0.570267, -0.429053, -0.513907, 0.742841, 0, 11.2589, 0)
+
+[node name="GameplayCamera" type="Node3D" parent="."]
+script = ExtResource("2_r20ig")

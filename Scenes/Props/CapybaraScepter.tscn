@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://c2ejxo2j7k6dy"]
+
+[ext_resource type="PackedScene" uid="uid://bwhagp3j7ey8k" path="res://Assets/Capy.blend" id="1_anrye"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.691131, 1, 1.13366)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.899939, 0.147781, -0.410209, -7.148e-09, 0.94081, 0.338935, 0.436017, -0.305021, 0.846671, -0.821136, 1.18543, 2.03642)
+visible = false
+
+[node name="Capy" parent="." instance=ExtResource("1_anrye")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00205481, 0, -0.00158471)

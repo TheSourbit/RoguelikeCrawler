@@ -18,19 +18,25 @@ public partial class Agent : Actor
   public Actor TargetActor;
   public Vector2I TargetLastKnownPosition;
 
+  protected override int PerformMoveAction(MoveAction action)
+  {
+    int turns = base.PerformMoveAction(action);
+    UpdateVisibleActors();
+
+    if (VisibleActors.Contains(TargetActor))
+    {
+      TargetLastKnownPosition = TargetActor.GridPosition;
+      GD.Print($"Target at {TargetLastKnownPosition}");
+    }
+
+    return turns;
+  }
+
   public override Action PlanAction()
   {
     GD.Print($"{State} : {TargetActor} @ {TargetLastKnownPosition}");
 
-    if (TargetActor != null)
-    {
-      if (VisibleActors.Contains(TargetActor))
-      {
-        TargetLastKnownPosition = TargetActor.GridPosition;
-        GD.Print($"Target at {TargetLastKnownPosition}");
-      }
-    }
-    else
+    if (TargetActor == null)
     {
       if (AcquireTarget())
       {
@@ -79,10 +85,9 @@ public partial class Agent : Actor
         Gameplay.Random.RandiRange(-1, 1)
       );
 
-      return new MoveAction(this)
+      return new MoveAction(this, GridPosition + move)
       {
         ExpectedCost = move.Length() > 1 ? 140 : 100,
-        TargetPosition = GridPosition + move
       };
     }
 
@@ -129,15 +134,11 @@ public partial class Agent : Actor
       path.Length == 2 means we are at melee range
       path.Length > 2 means we are at distance of path.Length - 2 tiles
     */
-    if (path.Length > 1)
-    {
-      return new MoveAction(this)
-      {
-        TargetPosition = (Vector2I)path[1],
-      };
-    }
 
-    return null;
+    // TODO: The possible move logic should be elsewhere
+    return path.Length > 2
+      ? new MoveAction(this, (Vector2I)path[1])
+      : null;
   }
 
   protected virtual bool AcquireTarget()
@@ -186,6 +187,12 @@ public partial class Agent : Actor
 
   protected bool HasTarget()
   {
-    return false;
+    return TargetActor != null;
+  }
+
+  // TODO: Update this to reflect the agent actual blocking state
+  public override bool IsBlockingPathing()
+  {
+    return true;
   }
 }

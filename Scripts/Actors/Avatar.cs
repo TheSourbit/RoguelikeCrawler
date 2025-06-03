@@ -30,10 +30,9 @@ public partial class Avatar : Actor
 
     Vector2[] path = DungeonLevel.Pathing.GetPointPath(GridPosition, target);
 
-    return new MoveAction(this)
-    {
-      TargetPosition = (Vector2I)path[1],
-    };
+    return path.Length == 2
+      ? new MoveAction(this, (Vector2I)path[1])
+      : null;
   }
 
   // TODO: This should be refactored out of here

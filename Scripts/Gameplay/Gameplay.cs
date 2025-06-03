@@ -24,7 +24,7 @@ public partial class Gameplay : Godot.Node
 
     Avatar = Assets.AvatarScene.Instantiate<Avatar>();
     Avatar.Camera = Camera;
-    Avatar.GridPosition = (Vector2I)Dungeon.CurrentLevel.EntryRoom.Midpoint;
+    CurrentLevel.MoveActorTo(Avatar, (Vector2I)Dungeon.CurrentLevel.EntryRoom.Midpoint);
 
     Camera.Tracking = Avatar;
 

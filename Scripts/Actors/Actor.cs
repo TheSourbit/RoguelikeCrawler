@@ -54,7 +54,7 @@ public abstract partial class Actor : Node3D
       ? action.ExpectedCost
       : GridPosition.DistanceSquaredTo(action.TargetPosition) > 1 ? 140 : 100;
 
-    GridPosition = action.TargetPosition;
+    DungeonLevel.MoveActorTo(this, action.TargetPosition);
 
     UpdateLineOfSight();
 

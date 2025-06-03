@@ -3,77 +3,6 @@ using System.Collections.Generic;
 
 using Godot;
 
-public enum TileType
-{
-  Void,
-  Node,
-  Wall,
-}
-
-public class TileData
-{
-  public static readonly int Invalid = -1;
-
-  public TileType Type = TileType.Void;
-  public Vector2I Position;
-  public Node Node = null;
-  public int Model = Invalid;
-  public int Orientation = 0;
-
-  // Orientations
-  //      F  U - Looking Down
-  //  0: +Z +Y --- Down
-  //  1: +Z -X
-  //  2: +Z -Y
-  //  3: +Z +X
-  //  4: -Y +Z
-  //  5: +X +Z
-  //  6: +Y +Z
-  //  7: -X +Z
-  //  8: -Z -Y
-  //  9: -Z +X
-  // 10: -Z +Y --- Up
-  // 11: -Z -X
-  // 12: +Y -Z
-  // 13: -X -Z
-  // 14: -Y -Z
-  // 15: +X -Z
-  // 16: +X +Y --- Right
-  // 17: +Y -X
-  // 18: -X -Y
-  // 19: -Y +X
-  // 20: +X -Y
-  // 21: +Y +X
-  // 22: -X +Y --- Left
-  // 23: -Y -X
-
-  public void SetWall()
-  {
-    Type = TileType.Wall;
-    Model = Invalid;
-  }
-
-  public void SetNode(Node node)
-  {
-    Type = TileType.Node;
-    Node = node;
-    Model = Invalid;
-  }
-
-  public void Reset()
-  {
-    Type = TileType.Void;
-    Node = null;
-    Model = Invalid;
-    Orientation = 0;
-  }
-
-  public override string ToString()
-  {
-    return $"[TileData {Type} {Position} | node: {Node}, model: {Model}, orientation: {Orientation}]";
-  }
-}
-
 public abstract class AbstractDungeonLevel
 {
   protected float AditionalConnections = 0.15f;
@@ -116,7 +45,7 @@ public abstract class AbstractDungeonLevel
     Pathing = new()
     {
       Region = Region,
-      DiagonalMode = AStarGrid2D.DiagonalModeEnum.AtLeastOneWalkable,
+      DiagonalMode = AStarGrid2D.DiagonalModeEnum.Always,
       DefaultComputeHeuristic = AStarGrid2D.Heuristic.Octile,
       DefaultEstimateHeuristic = AStarGrid2D.Heuristic.Octile
     };
@@ -187,7 +116,7 @@ public abstract class AbstractDungeonLevel
 
   public bool IsTileWall(int x, int y)
   {
-    return GetTileData(x, y).Type == TileType.Wall;
+    return GetTileData(x, y).Type == TileType.Solid;
   }
 
   public bool IsTileNode(Vector2I point)
@@ -197,7 +126,7 @@ public abstract class AbstractDungeonLevel
 
   public bool IsTileNode(int x, int y)
   {
-    return GetTileData(x, y).Type == TileType.Node;
+    return GetTileData(x, y)?.Type == TileType.Open;
   }
 
   public bool IsRegionEmpty(Rect2I region)
@@ -480,7 +409,7 @@ public abstract class AbstractDungeonLevel
         {
           // TODO: Use correct model & orientation
           TileData data = Tiles[GetTileIndex(x, y)];
-          data.Type = TileType.Wall;
+          data.Type = TileType.Solid;
         }
       }
     }
@@ -523,13 +452,13 @@ public abstract class AbstractDungeonLevel
         // TODO: This feels wrong
         if (IsTileNode(x, y))
         {
-          tile.Type = TileType.Node;
+          tile.Type = TileType.Open;
           tile.Model = 0;
         }
         else if (IsTileWall(x, y))
         {
-          tile.Type = TileType.Wall;
-          tile.Model = 20;
+          tile.Type = TileType.Solid;
+          tile.Model = 20; // 6
         }
       }
     }
@@ -571,11 +500,11 @@ public abstract class AbstractDungeonLevel
 
           if (y == up || y == down || x == left || x == right)
           {
-            tile.Type = TileType.Wall;
+            tile.Type = TileType.Solid;
             continue;
           }
 
-          tile.Type = TileType.Node;
+          tile.Type = TileType.Open;
           tile.Node = node;
         }
       }
@@ -733,5 +662,31 @@ public abstract class AbstractDungeonLevel
     actor.UpdateLineOfSight();
 
     Gameplay.Dungeon.AddChild(actor);
+  }
+
+  public void MoveActorTo(Actor actor, int toX, int toY)
+  {
+    MoveActorTo(actor, new(toX, toY));
+  }
+
+  public void MoveActorTo(Actor actor, Vector2I to)
+  {
+    TileData fromData = GetTileData(actor.GridPosition);
+    actor.GridPosition = to;
+
+    // TODO: Check TileData before unblocking tile
+    Pathing.SetPointSolid(fromData.Position, false);
+
+    // TODO: Check TileData before blocking tile
+    if (actor.IsBlockingPathing())
+    {
+      Pathing.SetPointSolid(to, true);
+    }
+  }
+
+  public void InsertWall(int x, int y)
+  {
+    Tiles[GetTileIndex(x, y)].SetWall();
+    Pathing.SetPointSolid(new(x, y), true);
   }
 }

@@ -104,4 +104,25 @@ class ForestLevel(int size) : AbstractDungeonLevel(size * size * 5, size * size 
   {
     return (int)(Mathf.Clamp(Gameplay.Random.Randfn(mean, deviation), 0, 1) * (Region.Size.Y - node.Size.Y - 2) + 1);
   }
+
+  
+
+  protected override void Populate()
+  {
+    for (int i = 0; i < 20; i++) AddAgent();
+  }
+
+  void AddAgent()
+  {
+    Agent agent = Assets.AgentScene.Instantiate<Agent>();
+    agent.State = AgentState.Wandering;
+
+    Node node = Rooms[Gameplay.Random.RandiRange(0, Rooms.Count - 1)];
+    MoveActorTo(agent, node.Position + new Vector2I(
+      Gameplay.Random.RandiRange(0, node.Size.X - 1),
+      Gameplay.Random.RandiRange(0, node.Size.Y - 1)
+    ));
+
+    InsertActor(agent);
+  }
 }

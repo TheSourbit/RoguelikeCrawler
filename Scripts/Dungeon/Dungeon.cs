@@ -24,7 +24,7 @@ public partial class Dungeon : Node3D
   void CreateLevels()
   {
     // TODO: Generalize this!
-    // CurrentLevel = new ForestLevel(4);
+    // CurrentLevel = new ForestLevel(5);
     CurrentLevel = new ThreeRoomsLevel(4);
     CurrentLevel.Generate();
 
@@ -58,20 +58,23 @@ public partial class Dungeon : Node3D
 
         if (!asActor.KnownTiles.Contains(tile))
         {
+          // HACK: Render everything
           continue;
         }
 
         Vector3I position = new(x, 0, y);
         TileData data = CurrentLevel.GetTileData(tile);
 
-        Node node = CurrentLevel.GetNode(tile);
-
         // HACK: Colorcoding the ground tiles
-        int item = data.Type == TileType.Node
-          ? (int)node.Type + 3
-          : data.Model
-        ;
+        // Node node = CurrentLevel.GetNode(tile);
+        // int item = data.Type == TileType.Open
+        //   ? (int)node.Type + 3
+        //   : data.Model
+        // ;
+        int item = data.Model;
 
+        // HACK: Render everything
+        // VisibleGridMap.SetCellItem(position, item, data.Orientation);
         var (set, unset) = asActor.VisibleTiles.Contains(tile)
           ? (VisibleGridMap, KnownGridMap)
           : (KnownGridMap, VisibleGridMap);
@@ -80,6 +83,16 @@ public partial class Dungeon : Node3D
         unset.SetCellItem(position, (int)GridMap.InvalidCellItem);
       }
     }
+
+    // foreach (Segment segment in CurrentLevel.Graph)
+    // {
+    //   Draw3D.Line(new (segment.A.X, 1, segment.A.Y), new (segment.B.X, 1, segment.B.Y));
+    // }
+
+    // foreach (Segment segment in CurrentLevel.Connections)
+    // {
+    //   Draw3D.Line(new (segment.A.X, 1, segment.A.Y), new (segment.B.X, 1, segment.B.Y), Color.FromHtml("ff0000"));
+    // }
   }
 
   public override void _Process(double delta)

@@ -18,14 +18,17 @@ class ThreeRoomsLevel(int size) : AbstractDungeonLevel((size + 1) * 3 + 1, size 
     UseNode(lastRoom);
   }
 
+  protected override void AddMissingWalls()
+  {
+    base.AddMissingWalls();
+    InsertWall(7, 3);
+    InsertWall(8, 2);
+  }
+
   protected override void Populate()
   {
     AddDoor();
-
-    // for (int i = 0; i < 10; i++)
-    // {
-      AddAgent();
-    // }
+    AddAgent();
   }
 
   void UseNode(Node node)
@@ -35,19 +38,11 @@ class ThreeRoomsLevel(int size) : AbstractDungeonLevel((size + 1) * 3 + 1, size 
     AssignTilesToWalledRoom(node);
   }
 
-  protected override void AddMissingWalls()
-  {
-    base.AddMissingWalls();
-    Tiles[GetTileIndex(7, 3)].SetWall();
-    Pathing.SetPointSolid(new(7, 3), true);
-  }
-
   void AddDoor()
   {
     Door door = Assets.DoorScene.Instantiate<Door>();
 
-    door.GridPosition = new Vector2I(5, 2);
-    door.Position = Gameplay.GridToWorld(door.GridPosition);
+    MoveActorTo(door, 5, 2);
     door.RotateY(Mathf.DegToRad(90));
 
     InsertActor(door);
@@ -60,11 +55,10 @@ class ThreeRoomsLevel(int size) : AbstractDungeonLevel((size + 1) * 3 + 1, size 
 
     Node node = Rooms[2];
     // Node node = Dungeon.CurrentLevel.Rooms[Random.RandiRange(0, Dungeon.CurrentLevel.Rooms.Count - 1)];
-    agent.GridPosition = node.Position + new Vector2I(
+    MoveActorTo(agent, node.Position + new Vector2I(
       Gameplay.Random.RandiRange(0, node.Size.X - 1),
       Gameplay.Random.RandiRange(0, node.Size.Y - 1)
-    );
-    agent.Position = Gameplay.GridToWorld(agent.GridPosition);
+    ));
 
     InsertActor(agent);
   }

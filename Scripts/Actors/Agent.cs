@@ -117,7 +117,12 @@ public partial class Agent : Actor
     // TODO: Starts fleeing if needed (-> Fleeing)
     // TODO: Look for target if lost contact (-> Alerted)
 
-    if (GridPosition == TargetLastKnownPosition && !VisibleActors.Contains(TargetActor))
+    if (VisibleActors.Contains(TargetActor))
+    {
+      GD.Print($"Seeing target at ${TargetActor.GridPosition}");
+      TargetLastKnownPosition = TargetActor.GridPosition;
+    }
+    else if (GridPosition == TargetLastKnownPosition)
     {
       GD.Print($"Lost Target");
 
@@ -127,16 +132,16 @@ public partial class Agent : Actor
       return Alerted();
     }
 
-    Vector2[] path = DungeonLevel.Pathing.GetPointPath(GridPosition, TargetLastKnownPosition);
     /*
       path.Length == 0 means we can't find path
       path.Length == 1 means we are standing in the target's last known tile
       path.Length == 2 means we are at melee range
       path.Length > 2 means we are at distance of path.Length - 2 tiles
     */
+    Vector2[] path = DungeonLevel.Pathing.GetPointPath(GridPosition, TargetLastKnownPosition);
 
     // TODO: The possible move logic should be elsewhere
-    return path.Length > 2
+    return path.Length > 1
       ? new MoveAction(this, (Vector2I)path[1])
       : null;
   }

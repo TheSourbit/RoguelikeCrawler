@@ -12,6 +12,7 @@ public enum Allegiance
 public abstract partial class Actor : Node3D
 {
   [Export] public Allegiance Allegiance = Allegiance.None;
+  [Export] public int InitialHealth = 1;
   [Export(PropertyHint.Range, "1,20")] public int VisionRange = 10;
 
   public int Turns;
@@ -23,8 +24,15 @@ public abstract partial class Actor : Node3D
   public readonly HashSet<Vector2I> VisibleTiles = [];
   public readonly HashSet<Vector2I> KnownTiles = [];
 
+  public Status Status { get; private set; }
+
   public virtual void FlowTurns(int turns) { }
   public virtual Action PlanAction() { return null; }
+
+  public override void _Ready()
+  {
+    Status = new Status(this, InitialHealth);
+  }
 
   public virtual int PerformAction(Action action)
   {

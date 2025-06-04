@@ -140,10 +140,21 @@ public partial class Agent : Actor
     */
     Vector2[] path = DungeonLevel.Pathing.GetPointPath(GridPosition, TargetLastKnownPosition);
 
-    // TODO: The possible move logic should be elsewhere
+    // TODO: The possible move/attack logic should be elsewhere
+    Vector2I to = (Vector2I)path[1];
+    if (path.Length == 2 && TargetActor.GridPosition == to)
+    {
+      return Attack(to);
+    }
+
     return path.Length > 1
-      ? new MoveAction(this, (Vector2I)path[1])
-      : null;
+        ? new MoveAction(this, to)
+        : null;
+  }
+
+  AttackAction Attack(Vector2I to)
+  {
+    return new AttackAction(this, to);
   }
 
   protected virtual bool AcquireTarget()

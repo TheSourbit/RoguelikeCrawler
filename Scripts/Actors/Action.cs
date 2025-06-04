@@ -12,3 +12,8 @@ public class MoveAction(Actor actor, Vector2I to) : Action(actor)
 {
   public Vector2I TargetPosition = to;
 }
+
+public class AttackAction(Actor actor, Vector2I to) : Action(actor)
+{
+  public Vector2I TargetPosition = to;
+}

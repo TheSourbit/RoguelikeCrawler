@@ -105,8 +105,6 @@ class ForestLevel(int size) : AbstractDungeonLevel(size * size * 5, size * size 
     return (int)(Mathf.Clamp(Gameplay.Random.Randfn(mean, deviation), 0, 1) * (Region.Size.Y - node.Size.Y - 2) + 1);
   }
 
-  
-
   protected override void Populate()
   {
     for (int i = 0; i < 20; i++) AddAgent();

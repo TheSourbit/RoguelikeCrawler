@@ -15,6 +15,11 @@ public abstract partial class Actor : Node3D
   [Export] public int InitialHealth = 1;
   [Export(PropertyHint.Range, "1,20")] public int VisionRange = 10;
 
+  public bool IsActive { get; private set; } = true;
+  public bool IsDisposable { get; protected set; } = true;
+
+  public System.Action<Actor> OnActiveChange;
+
   public int Turns;
 
   public AbstractDungeonLevel DungeonLevel;
@@ -34,19 +39,32 @@ public abstract partial class Actor : Node3D
     Status = new Status(this, InitialHealth);
   }
 
+  protected void Activate()
+  {
+    IsActive = true;
+    OnActiveChange?.Invoke(this);
+  }
+
+  protected void Deactivate()
+  {
+    IsActive = false;
+    OnActiveChange?.Invoke(this);
+  }
+
   public virtual int PerformAction(Action action)
   {
     int turns = action switch
     {
       WaitAction wait => PerformWaitAction(wait),
       MoveAction move => PerformMoveAction(move),
+      AttackAction attack => PerformAttackAction(attack),
       _ => 100,
     };
 
     return turns;
   }
 
-  protected virtual int PerformWaitAction(Action action)
+  protected virtual int PerformWaitAction(WaitAction action)
   {
     return 100;
   }
@@ -58,9 +76,7 @@ public abstract partial class Actor : Node3D
       return 0;
     }
 
-    int turns = action.ExpectedCost > 0
-      ? action.ExpectedCost
-      : GridPosition.DistanceSquaredTo(action.TargetPosition) > 1 ? 140 : 100;
+    int turns = action.ExpectedCost;
 
     DungeonLevel.MoveActorTo(this, action.TargetPosition);
 
@@ -69,9 +85,16 @@ public abstract partial class Actor : Node3D
     return turns;
   }
 
-  protected virtual int PerformVoidAction(Action action)
+  protected virtual int PerformAttackAction(AttackAction action)
   {
-    return 0;
+    if (DungeonLevel.TryGetActorAt(action.TargetPosition, out Actor actor))
+    {
+      GD.Print($"Attacking actor: {actor}");
+      // TODO: Implement proper weapon handling
+      actor.Status.Damage(2);
+    }
+
+    return 100;
   }
 
   public Action GetNextAction()
@@ -124,5 +147,20 @@ public abstract partial class Actor : Node3D
   public virtual bool IsBlockingPathing()
   {
     return false;
+  }
+
+  public virtual bool IsNeutral(Actor actor)
+  {
+    return Allegiance == Allegiance.None || actor.Allegiance == Allegiance.None;
+  }
+
+  public virtual bool IsFriend(Actor actor)
+  {
+    return !IsNeutral(actor) && Allegiance == actor.Allegiance;
+  }
+
+  public virtual bool IsFoe(Actor actor)
+  {
+    return !IsNeutral(actor) && Allegiance != actor.Allegiance;
   }
 }

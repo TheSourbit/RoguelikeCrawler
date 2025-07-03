@@ -37,6 +37,8 @@ public class Status(Actor actor, int health, Dictionary<EffectType, float> facto
 {
   readonly Actor Actor = actor;
 
+  public System.Action OnDeath;
+
   public int MaxHealth { get; private set; } = health;
   public int Health { get; private set; } = health;
 
@@ -46,9 +48,20 @@ public class Status(Actor actor, int health, Dictionary<EffectType, float> facto
   public void Damage(float strength, EffectType type = EffectType.Physical)
   {
     float multiplier = Factors.TryGetValue(type, out float factor) ? factor : 1f;
-    int final = Mathf.Max(1, (int)(strength * multiplier));
+    int final = Mathf.Max(0, (int)(strength * multiplier));
 
     Health = Mathf.Min(MaxHealth, Mathf.Max(0, Health - final));
+
+    if (Health == 0)
+    {
+      // TODO: Implement actual death
+      OnDeath?.Invoke();
+    }
+  }
+
+  public void AddEffect(Effect effect)
+  {
+    Effects.Add(effect);
   }
 
   public void FlowTurns(int turns)
@@ -70,11 +83,6 @@ public class Status(Actor actor, int health, Dictionary<EffectType, float> facto
     {
       Effects.Remove(effect);
     }
-  }
-
-  public void AddEffect(Effect effect)
-  {
-    Effects.Add(effect);
   }
 
   public bool TryGetEffectOfType(EffectType type, out Effect effect)

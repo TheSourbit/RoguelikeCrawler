@@ -18,6 +18,13 @@ public partial class Agent : Actor
   public Actor TargetActor;
   public Vector2I TargetLastKnownPosition;
 
+  public override void _Ready()
+  {
+    base._Ready();
+
+    Status.OnDeath += Deactivate;
+  }
+
   protected override int PerformMoveAction(MoveAction action)
   {
     int turns = base.PerformMoveAction(action);
@@ -164,14 +171,10 @@ public partial class Agent : Actor
       return false;
     }
 
-    Allegiance foe = Allegiance == Allegiance.Dungeon
-      ? Allegiance.Player
-      : Allegiance.Dungeon;
-
     List<(Actor actor, int distance)> validTargets = [];
     foreach (Actor actor in VisibleActors)
     {
-      if (actor.Allegiance == foe)
+      if (IsFoe(actor))
       {
         validTargets.Add((actor, GetManhattanDistanceTo(actor)));
       }

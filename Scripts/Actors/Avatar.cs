@@ -30,9 +30,36 @@ public partial class Avatar : Actor
 
     Vector2[] path = DungeonLevel.Pathing.GetPointPath(GridPosition, target);
 
-    return path.Length == 2
-      ? new MoveAction(this, (Vector2I)path[1])
-      : null;
+    if (path.Length < 2)
+    {
+      return null;
+    }
+
+    Vector2I nextStep = (Vector2I)path[1];
+
+    if (path.Length == 2 && DungeonLevel.TryGetActorAt(target, out Actor actor))
+    {
+      if (IsFoe(actor))
+      {
+        return new AttackAction(this, nextStep);
+      }
+
+      if (IsFriend(actor))
+      {
+        // TODO: Swap places?
+      }
+
+      if (IsNeutral(actor))
+      {
+        // TODO: Implement a proper Interactable interface
+        if (actor is Door door)
+        {
+          door.Open();
+        }
+      }
+    }
+
+    return new MoveAction(this, nextStep);
   }
 
   // TODO: This should be refactored out of here

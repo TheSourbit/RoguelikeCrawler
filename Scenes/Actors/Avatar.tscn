@@ -26,6 +26,7 @@ rings = 1
 [node name="Avatar" type="Node3D"]
 script = ExtResource("1_sktjk")
 Allegiance = 1
+InitialHealth = 20
 
 [node name="Body" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)

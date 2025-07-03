@@ -662,6 +662,22 @@ public abstract class AbstractDungeonLevel
     actor.UpdateLineOfSight();
 
     Gameplay.Dungeon.AddChild(actor);
+    actor.OnActiveChange += OnActorActiveChange;
+  }
+
+  private void OnActorActiveChange(Actor actor)
+  {
+    if (actor.IsActive)
+    {
+      ActorQueue.Enqueue(actor, actor.Turns);
+      return;
+    }
+
+    ActorQueue.Dequeue(actor);
+    if (actor.IsDisposable)
+    {
+      Actors.Remove(actor);
+    }
   }
 
   public void MoveActorTo(Actor actor, int toX, int toY)
@@ -674,13 +690,15 @@ public abstract class AbstractDungeonLevel
     TileData fromData = GetTileData(actor.GridPosition);
     actor.GridPosition = to;
 
-    // TODO: Check TileData before unblocking tile
-    Pathing.SetPointSolid(fromData.Position, false);
+    // TODO: Check TileData before blocking/unblocking tile
+    // TODO: The weight scale needs to be cached/checked
+    Pathing.SetPointWeightScale(fromData.Position, 100);
 
-    // TODO: Check TileData before blocking tile
+    // TODO: Check TileData before blocking/unblocking tile
     if (actor.IsBlockingPathing())
     {
-      Pathing.SetPointSolid(to, true);
+      // TODO: The weight scale needs to be cached/checked
+      Pathing.SetPointWeightScale(to, 1);
     }
   }
 

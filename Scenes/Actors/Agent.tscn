@@ -1,6 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://ddg7key3c4xdv"]
+[gd_scene load_steps=7 format=3 uid="uid://ddg7key3c4xdv"]
 
 [ext_resource type="Script" uid="uid://cimmr5x8hy32b" path="res://Scripts/Actors/Agent.cs" id="1_nhtwv"]
+[ext_resource type="PackedScene" uid="uid://obhfo15gebn1" path="res://Scenes/HealthBar.tscn" id="2_y1p3a"]
+[ext_resource type="Script" uid="uid://disme4u32p8ak" path="res://Scripts/Utils/BillboardHealthBar.cs" id="3_7ppkl"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rv3o2"]
 albedo_color = Color(0.85836, 0.383372, 0.352502, 1)
@@ -15,9 +17,25 @@ radial_segments = 16
 rings = 8
 is_hemisphere = true
 
+[sub_resource type="ViewportTexture" id="ViewportTexture_7ppkl"]
+viewport_path = NodePath("SubViewport")
+
 [node name="Agent" type="Node3D"]
 script = ExtResource("1_nhtwv")
 Allegiance = 2
+InitialHealth = 10
 
 [node name="Body" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_8i0hr")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+disable_3d = true
+transparent_bg = true
+
+[node name="HealthBar" parent="SubViewport" instance=ExtResource("2_y1p3a")]
+script = ExtResource("3_7ppkl")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.814907, 0)
+billboard = 1
+texture = SubResource("ViewportTexture_7ppkl")

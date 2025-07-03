@@ -71,4 +71,9 @@ public class ActorQueue
       Gameplay.CurrentLevel.Update();
     }
   }
+
+  public void Dequeue(Actor actor)
+  {
+    Queue.Remove(actor);
+  }
 }

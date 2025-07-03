@@ -1,19 +1,8 @@
 using Godot;
 
-public class Action(Actor actor)
-{
-  public Actor Actor = actor;
-  public int ExpectedCost = 100;
-}
+// TODO: Is it possible to exchange `record` for `record struct`?
 
-public class WaitAction(Actor actor) : Action(actor) { }
-
-public class MoveAction(Actor actor, Vector2I to) : Action(actor)
-{
-  public Vector2I TargetPosition = to;
-}
-
-public class AttackAction(Actor actor, Vector2I to) : Action(actor)
-{
-  public Vector2I TargetPosition = to;
-}
+public record Action(Actor Actor, int ExpectedCost = 100);
+public record WaitAction(Actor Actor) : Action(Actor);
+public record MoveAction(Actor Actor, Vector2I TargetPosition) : Action(Actor);
+public record AttackAction(Actor Actor, Vector2I TargetPosition) : Action(Actor);

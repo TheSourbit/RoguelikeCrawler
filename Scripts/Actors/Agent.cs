@@ -33,7 +33,7 @@ public partial class Agent : Actor
     if (VisibleActors.Contains(TargetActor))
     {
       TargetLastKnownPosition = TargetActor.GridPosition;
-      GD.Print($"Target at {TargetLastKnownPosition}");
+      GD.Print($"Updating Target LKP: {TargetLastKnownPosition}");
     }
 
     return turns;
@@ -41,13 +41,13 @@ public partial class Agent : Actor
 
   public override Action PlanAction()
   {
-    GD.Print($"{State} : {TargetActor} @ {TargetLastKnownPosition}");
+    GD.Print($"{State}");
 
     if (TargetActor == null)
     {
       if (AcquireTarget())
       {
-        GD.Print($"Saw Target {TargetActor} at {TargetLastKnownPosition}");
+        GD.Print($"Acquired Target {TargetActor.GetType().Name} @ {TargetLastKnownPosition}");
         State = AgentState.Hunting;
         // TODO: Should this agent broadcast it's target last known position
       }
@@ -92,10 +92,7 @@ public partial class Agent : Actor
         Gameplay.Random.RandiRange(-1, 1)
       );
 
-      return new MoveAction(this, GridPosition + move)
-      {
-        ExpectedCost = move.Length() > 1 ? 140 : 100,
-      };
+      return new MoveAction(GridPosition + move);
     }
 
     // TODO: Move somewhere
@@ -155,13 +152,13 @@ public partial class Agent : Actor
     }
 
     return path.Length > 1
-        ? new MoveAction(this, to)
+        ? new MoveAction(to)
         : null;
   }
 
   AttackAction Attack(Vector2I to)
   {
-    return new AttackAction(this, to);
+    return new AttackAction(to);
   }
 
   protected virtual bool AcquireTarget()

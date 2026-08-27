@@ -76,13 +76,12 @@ public abstract partial class Actor : Node3D
       return 0;
     }
 
-    int turns = action.ExpectedCost;
-
     DungeonLevel.MoveActorTo(this, action.TargetPosition);
 
     UpdateLineOfSight();
 
-    return turns;
+    // TODO: Take Status into consideration
+    return 100;
   }
 
   protected virtual int PerformAttackAction(AttackAction action)

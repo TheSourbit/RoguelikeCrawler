@@ -41,7 +41,7 @@ public partial class Avatar : Actor
     {
       if (IsFoe(actor))
       {
-        return new AttackAction(this, nextStep);
+        return new AttackAction(nextStep);
       }
 
       if (IsFriend(actor))
@@ -58,7 +58,7 @@ public partial class Avatar : Actor
       }
     }
 
-    return new MoveAction(this, nextStep);
+    return new MoveAction(nextStep);
   }
 
   // TODO: This should be refactored out of here

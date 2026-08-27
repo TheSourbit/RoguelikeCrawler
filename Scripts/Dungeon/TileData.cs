@@ -21,6 +21,9 @@ public class TileData
   public int Model = Invalid;
   public int Orientation = 0;
 
+  // TODO: How to implement this? What goes inside?
+  // public Stack<Actor> Actors;
+
   // Orientations
   //      F  U - Looking Down
   //  0: +Z +Y --- Down

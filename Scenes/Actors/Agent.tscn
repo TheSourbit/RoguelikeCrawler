@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://ddg7key3c4xdv"]
+[gd_scene format=3 uid="uid://ddg7key3c4xdv"]
 
 [ext_resource type="Script" uid="uid://cimmr5x8hy32b" path="res://Scripts/Actors/Agent.cs" id="1_nhtwv"]
 [ext_resource type="PackedScene" uid="uid://obhfo15gebn1" path="res://Scenes/HealthBar.tscn" id="2_y1p3a"]
@@ -20,22 +20,22 @@ is_hemisphere = true
 [sub_resource type="ViewportTexture" id="ViewportTexture_7ppkl"]
 viewport_path = NodePath("SubViewport")
 
-[node name="Agent" type="Node3D"]
+[node name="Agent" type="Node3D" unique_id=711204954]
 script = ExtResource("1_nhtwv")
 Allegiance = 2
 InitialHealth = 10
 
-[node name="Body" type="MeshInstance3D" parent="."]
+[node name="Body" type="MeshInstance3D" parent="." unique_id=498748103]
 mesh = SubResource("SphereMesh_8i0hr")
 
-[node name="SubViewport" type="SubViewport" parent="."]
+[node name="SubViewport" type="SubViewport" parent="." unique_id=1336539460]
 disable_3d = true
 transparent_bg = true
 
-[node name="HealthBar" parent="SubViewport" instance=ExtResource("2_y1p3a")]
+[node name="HealthBar" parent="SubViewport" unique_id=1546113874 instance=ExtResource("2_y1p3a")]
 script = ExtResource("3_7ppkl")
 
-[node name="Sprite3D" type="Sprite3D" parent="."]
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=775458393]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.814907, 0)
 billboard = 1
 texture = SubResource("ViewportTexture_7ppkl")

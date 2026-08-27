@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://b40txlx03bvs4"]
+[gd_scene format=3 uid="uid://b40txlx03bvs4"]
 
 [ext_resource type="Script" uid="uid://161ireclxw40" path="res://Scripts/Actors/Avatar.cs" id="1_sktjk"]
 
@@ -23,15 +23,15 @@ height = 0.75
 radial_segments = 8
 rings = 1
 
-[node name="Avatar" type="Node3D"]
+[node name="Avatar" type="Node3D" unique_id=1480966524]
 script = ExtResource("1_sktjk")
 Allegiance = 1
 InitialHealth = 20
 
-[node name="Body" type="MeshInstance3D" parent="."]
+[node name="Body" type="MeshInstance3D" parent="." unique_id=59136537]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 mesh = SubResource("CapsuleMesh_e76y3")
 
-[node name="Sword" type="MeshInstance3D" parent="."]
+[node name="Sword" type="MeshInstance3D" parent="." unique_id=666322615]
 transform = Transform3D(0.322644, -0.2449, -0.914289, 0.604599, 0.79653, 1.20718e-08, 0.728259, -0.552778, 0.405062, 0.269314, 0.865129, -0.266459)
 mesh = SubResource("CapsuleMesh_i0otl")

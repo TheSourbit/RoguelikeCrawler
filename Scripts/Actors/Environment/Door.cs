@@ -1,6 +1,18 @@
-public partial class Door : Actor
+public partial class Door : Prop
 {
   bool Closed = true;
+
+  public override void Interact()
+  {
+    if (Closed)
+    {
+      Open();
+    }
+    else
+    {
+      Close();
+    }
+  }
 
   public void Open()
   {
@@ -10,11 +22,6 @@ public partial class Door : Actor
   public void Close()
   {
     Closed = true;
-  }
-
-  public void Toggle()
-  {
-    Closed = !Closed;
   }
 
   public override bool IsBlockingLoS()

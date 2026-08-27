@@ -51,10 +51,9 @@ public partial class Avatar : Actor
 
       if (IsNeutral(actor))
       {
-        // TODO: Implement a proper Interactable interface
-        if (actor is Door door)
+        if (actor is Prop prop)
         {
-          door.Open();
+          prop.Interact();
         }
       }
     }

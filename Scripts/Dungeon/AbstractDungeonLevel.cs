@@ -690,15 +690,15 @@ public abstract class AbstractDungeonLevel
     TileData fromData = GetTileData(actor.GridPosition);
     actor.GridPosition = to;
 
-    // TODO: Check TileData before blocking/unblocking tile
+    // TODO: Check TileData before unblocking tile
     // TODO: The weight scale needs to be cached/checked
-    Pathing.SetPointWeightScale(fromData.Position, 100);
+    Pathing.SetPointWeightScale(fromData.Position, 1);
 
-    // TODO: Check TileData before blocking/unblocking tile
+    // TODO: Check TileData before blocking tile
     if (actor.IsBlockingPathing())
     {
       // TODO: The weight scale needs to be cached/checked
-      Pathing.SetPointWeightScale(to, 1);
+      Pathing.SetPointWeightScale(to, 100);
     }
   }
 

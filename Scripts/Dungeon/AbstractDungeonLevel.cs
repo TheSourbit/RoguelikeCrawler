@@ -20,6 +20,8 @@ public abstract class AbstractDungeonLevel
   public readonly List<Actor> Actors;
   public readonly AStarGrid2D Pathing;
 
+  readonly Dictionary<Vector2I, List<Actor>> ActorsByTile = [];
+
   public Node EntryRoom { get; private set; }
   public Node ExitRoom { get; private set; }
   public List<Node> Rooms { get; private set; }
@@ -641,23 +643,53 @@ public abstract class AbstractDungeonLevel
 
   public bool TryGetActorAt(Vector2I tile, out Actor actor)
   {
-    foreach (Actor _actor in Actors)
+    if (ActorsByTile.TryGetValue(tile, out List<Actor> actors) && actors.Count > 0)
     {
-      if (_actor.GridPosition == tile)
-      {
-        actor = _actor;
-        return true;
-      }
+      actor = actors[0];
+      return true;
     }
 
     actor = default;
     return false;
   }
 
+  void AddActorToTile(Actor actor)
+  {
+    if (!ActorsByTile.TryGetValue(actor.GridPosition, out List<Actor> actors))
+    {
+      actors = [];
+      ActorsByTile.Add(actor.GridPosition, actors);
+    }
+
+    if (!actors.Contains(actor))
+    {
+      actors.Add(actor);
+    }
+  }
+
+  void RemoveActorFromTile(Actor actor, Vector2I tile)
+  {
+    if (!ActorsByTile.TryGetValue(tile, out List<Actor> actors))
+    {
+      return;
+    }
+
+    actors.Remove(actor);
+    if (actors.Count == 0)
+    {
+      ActorsByTile.Remove(tile);
+    }
+  }
+
   public void InsertActor(Actor actor)
   {
     actor.DungeonLevel = this;
     Actors.Add(actor);
+    if (actor.IsActive)
+    {
+      AddActorToTile(actor);
+    }
+
     ActorQueue.Enqueue(actor);
     actor.UpdateLineOfSight();
 
@@ -669,11 +701,17 @@ public abstract class AbstractDungeonLevel
   {
     if (actor.IsActive)
     {
+      if (Actors.Contains(actor))
+      {
+        AddActorToTile(actor);
+      }
+
       ActorQueue.Enqueue(actor, actor.Turns);
       return;
     }
 
     ActorQueue.Dequeue(actor);
+    RemoveActorFromTile(actor, actor.GridPosition);
     if (actor.IsDisposable)
     {
       Actors.Remove(actor);
@@ -687,8 +725,19 @@ public abstract class AbstractDungeonLevel
 
   public void MoveActorTo(Actor actor, Vector2I to)
   {
+    bool isRegistered = Actors.Contains(actor);
+    if (isRegistered && actor.IsActive)
+    {
+      RemoveActorFromTile(actor, actor.GridPosition);
+    }
+
     TileData fromData = GetTileData(actor.GridPosition);
     actor.GridPosition = to;
+
+    if (isRegistered && actor.IsActive)
+    {
+      AddActorToTile(actor);
+    }
 
     // TODO: Check TileData before unblocking tile
     // TODO: The weight scale needs to be cached/checked

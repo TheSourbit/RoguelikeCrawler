@@ -46,8 +46,6 @@ public struct Row(int depth, float startSlope, float endSlope)
 
 public class Shadowcasting(Quadrant quadrant, Func<Vector2I, bool> isBlocking, Action<Vector2I> markVisible)
 {
-  static Vector2I None = -Vector2I.One;
-
   public static void ComputeFOV(Vector2I origin, int range, Func<Vector2I, bool> isBlocking, Action<Vector2I> markVisible)
   {
     markVisible(origin);
@@ -67,7 +65,8 @@ public class Shadowcasting(Quadrant quadrant, Func<Vector2I, bool> isBlocking, A
     if (row.Depth > maxDepth) return;
 
     bool isWall = false;
-    Vector2I prevTile = None;
+    bool isWallPrevious = false;
+    bool hasPreviousTile = false;
 
     foreach (Vector2I tile in row.Tiles())
     {
@@ -79,16 +78,14 @@ public class Shadowcasting(Quadrant quadrant, Func<Vector2I, bool> isBlocking, A
         markVisible(transformedTile);
       }
 
-      if (prevTile != None)
+      if (hasPreviousTile)
       {
-        bool isWallPrev = isBlocking(quadrant.GetTransformed(prevTile));
-
-        if (isWallPrev && !isWall)
+        if (isWallPrevious && !isWall)
         {
           row.StartSlope = Slope(tile);
         }
 
-        if (!isWallPrev && isWall)
+        if (!isWallPrevious && isWall)
         {
           Row nextRow = row.Next();
           nextRow.EndSlope = Slope(tile);
@@ -96,7 +93,8 @@ public class Shadowcasting(Quadrant quadrant, Func<Vector2I, bool> isBlocking, A
         }
       }
 
-      prevTile = tile;
+      isWallPrevious = isWall;
+      hasPreviousTile = true;
     }
 
     if (!isWall)

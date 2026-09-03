@@ -26,8 +26,8 @@ public abstract partial class Actor : Node3D
   public Vector2I GridPosition;
 
   public readonly HashSet<Actor> VisibleActors = [];
-  public readonly HashSet<Vector2I> VisibleTiles = [];
-  public readonly HashSet<Vector2I> KnownTiles = [];
+  public readonly DenseTileSet VisibleTiles = new();
+  public readonly DenseTileSet KnownTiles = new();
 
   bool VisibleActorsDirty = true;
   int VisibleActorsVersion = -1;
@@ -109,6 +109,8 @@ public abstract partial class Actor : Node3D
   public void UpdateLineOfSight()
   {
     VisibleActorsDirty = true;
+    VisibleTiles.Configure(DungeonLevel.Region);
+    KnownTiles.Configure(DungeonLevel.Region);
     VisibleTiles.Clear();
     Shadowcasting.ComputeFOV(GridPosition, VisionRange, IsBlockingTile, MarkTileVisible);
   }

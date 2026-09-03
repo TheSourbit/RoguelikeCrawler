@@ -5,4 +5,7 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <RootNamespace>RoguelikeCrawler</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Tests/**/*.cs" />
+  </ItemGroup>
 </Project>

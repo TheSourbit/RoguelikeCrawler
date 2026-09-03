@@ -28,20 +28,6 @@ public struct Row(int depth, float startSlope, float endSlope)
   public float EndSlope = endSlope;
 
   public readonly Row Next() => new(Depth + 1, StartSlope, EndSlope);
-  public readonly Vector2I[] Tiles()
-  {
-    int min = (int)Mathf.Floor(Depth * StartSlope + 0.5f);
-    int max = (int)Mathf.Ceil(Depth * EndSlope - 0.5f);
-
-    int count = max - min + 1;
-    var tiles = new Vector2I[count];
-    for (int i = 0; i < count; i++)
-    {
-      tiles[i] = new(Depth, i + min);
-    }
-
-    return tiles;
-  }
 }
 
 public class Shadowcasting(Quadrant quadrant, Func<Vector2I, bool> isBlocking, Action<Vector2I> markVisible)
@@ -67,9 +53,12 @@ public class Shadowcasting(Quadrant quadrant, Func<Vector2I, bool> isBlocking, A
     bool isWall = false;
     bool isWallPrevious = false;
     bool hasPreviousTile = false;
+    int minY = (int)Mathf.Floor(row.Depth * row.StartSlope + 0.5f);
+    int maxY = (int)Mathf.Ceil(row.Depth * row.EndSlope - 0.5f);
 
-    foreach (Vector2I tile in row.Tiles())
+    for (int y = minY; y <= maxY; y++)
     {
+      Vector2I tile = new(row.Depth, y);
       Vector2I transformedTile = quadrant.GetTransformed(tile);
       isWall = isBlocking(transformedTile);
 

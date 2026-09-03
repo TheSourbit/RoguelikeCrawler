@@ -134,6 +134,11 @@ public abstract partial class Actor : Node3D
 
   protected virtual void MarkTileVisible(Vector2I tile)
   {
+    if (!DungeonLevel.IsValidTilePosition(tile))
+    {
+      return;
+    }
+
     KnownTiles.Add(tile);
     VisibleTiles.Add(tile);
   }

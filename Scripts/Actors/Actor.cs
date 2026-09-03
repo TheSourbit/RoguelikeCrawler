@@ -29,6 +29,9 @@ public abstract partial class Actor : Node3D
   public readonly HashSet<Vector2I> VisibleTiles = [];
   public readonly HashSet<Vector2I> KnownTiles = [];
 
+  bool VisibleActorsDirty = true;
+  int VisibleActorsVersion = -1;
+
   public Status Status { get; private set; }
 
   public virtual void FlowTurns(int turns) { }
@@ -105,24 +108,33 @@ public abstract partial class Actor : Node3D
 
   public void UpdateLineOfSight()
   {
+    VisibleActorsDirty = true;
     VisibleTiles.Clear();
     Shadowcasting.ComputeFOV(GridPosition, VisionRange, IsBlockingTile, MarkTileVisible);
   }
 
   public virtual void UpdateVisibleActors()
   {
+    if (!VisibleActorsDirty && VisibleActorsVersion == DungeonLevel.ActorVisibilityVersion)
+    {
+      return;
+    }
+
     // TODO: Can we cache the actors per tile in the AbstractDungeonLevel?
     VisibleActors.Clear();
     foreach (Vector2I tile in VisibleTiles)
     {
       foreach (Actor actor in DungeonLevel.Actors)
       {
-        if (actor.GridPosition == tile)
+        if (actor.IsActive && actor.GridPosition == tile)
         {
           VisibleActors.Add(actor);
         }
       }
     }
+
+    VisibleActorsVersion = DungeonLevel.ActorVisibilityVersion;
+    VisibleActorsDirty = false;
   }
 
   protected virtual bool IsBlockingTile(Vector2I tile)

@@ -21,6 +21,7 @@ public abstract class AbstractDungeonLevel
   public readonly AStarGrid2D Pathing;
 
   readonly Dictionary<Vector2I, List<Actor>> ActorsByTile = [];
+  internal int ActorVisibilityVersion { get; private set; }
 
   public Node EntryRoom { get; private set; }
   public Node ExitRoom { get; private set; }
@@ -688,6 +689,7 @@ public abstract class AbstractDungeonLevel
     if (actor.IsActive)
     {
       AddActorToTile(actor);
+      ActorVisibilityVersion++;
     }
 
     ActorQueue.Enqueue(actor);
@@ -704,6 +706,7 @@ public abstract class AbstractDungeonLevel
       if (Actors.Contains(actor))
       {
         AddActorToTile(actor);
+        ActorVisibilityVersion++;
       }
 
       ActorQueue.Enqueue(actor, actor.Turns);
@@ -712,6 +715,7 @@ public abstract class AbstractDungeonLevel
 
     ActorQueue.Dequeue(actor);
     RemoveActorFromTile(actor, actor.GridPosition);
+    ActorVisibilityVersion++;
     if (actor.IsDisposable)
     {
       Actors.Remove(actor);
@@ -737,6 +741,7 @@ public abstract class AbstractDungeonLevel
     if (isRegistered && actor.IsActive)
     {
       AddActorToTile(actor);
+      ActorVisibilityVersion++;
     }
 
     // TODO: Check TileData before unblocking tile

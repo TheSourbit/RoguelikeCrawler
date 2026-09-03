@@ -654,6 +654,11 @@ public abstract class AbstractDungeonLevel
     return false;
   }
 
+  internal bool TryGetActorsAt(Vector2I tile, out List<Actor> actors)
+  {
+    return ActorsByTile.TryGetValue(tile, out actors);
+  }
+
   void AddActorToTile(Actor actor)
   {
     if (!ActorsByTile.TryGetValue(actor.GridPosition, out List<Actor> actors))

@@ -131,16 +131,17 @@ public abstract partial class Actor : Node3D
       return;
     }
 
-    // TODO: Can we cache the actors per tile in the AbstractDungeonLevel?
     VisibleActors.Clear();
     foreach (Vector2I tile in VisibleTiles)
     {
-      foreach (Actor actor in DungeonLevel.Actors)
+      if (!DungeonLevel.TryGetActorsAt(tile, out var actors))
       {
-        if (actor.IsActive && actor.GridPosition == tile)
-        {
-          VisibleActors.Add(actor);
-        }
+        continue;
+      }
+
+      foreach (Actor actor in actors)
+      {
+        VisibleActors.Add(actor);
       }
     }
 

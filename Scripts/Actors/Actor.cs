@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using Godot;
@@ -31,8 +32,16 @@ public abstract partial class Actor : Node3D
 
   bool VisibleActorsDirty = true;
   int VisibleActorsVersion = -1;
+  readonly Func<Vector2I, bool> IsBlockingTileCallback;
+  readonly System.Action<Vector2I> MarkTileVisibleCallback;
 
   public Status Status { get; private set; }
+
+  protected Actor()
+  {
+    IsBlockingTileCallback = IsBlockingTile;
+    MarkTileVisibleCallback = MarkTileVisible;
+  }
 
   public virtual void FlowTurns(int turns) { }
   public virtual Action PlanAction() { return null; }
@@ -112,7 +121,7 @@ public abstract partial class Actor : Node3D
     VisibleTiles.Configure(DungeonLevel.Region);
     KnownTiles.Configure(DungeonLevel.Region);
     VisibleTiles.Clear();
-    Shadowcasting.ComputeFOV(GridPosition, VisionRange, IsBlockingTile, MarkTileVisible);
+    Shadowcasting.ComputeFOV(GridPosition, VisionRange, IsBlockingTileCallback, MarkTileVisibleCallback);
   }
 
   public virtual void UpdateVisibleActors()

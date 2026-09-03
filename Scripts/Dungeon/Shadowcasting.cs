@@ -30,7 +30,7 @@ public struct Row(int depth, float startSlope, float endSlope)
   public readonly Row Next() => new(Depth + 1, StartSlope, EndSlope);
 }
 
-public class Shadowcasting(Quadrant quadrant, Func<Vector2I, bool> isBlocking, Action<Vector2I> markVisible)
+public static class Shadowcasting
 {
   public static void ComputeFOV(Vector2I origin, int range, Func<Vector2I, bool> isBlocking, Action<Vector2I> markVisible)
   {
@@ -38,15 +38,20 @@ public class Shadowcasting(Quadrant quadrant, Func<Vector2I, bool> isBlocking, A
     for (int i = 0; i < 4; i++)
     {
       Quadrant quadrant = new((Cardinals)i, origin);
-      Shadowcasting shadowcasting = new(quadrant, isBlocking, markVisible);
-      shadowcasting.Scan(new(1, -1, 1), range);
+      Scan(new(1, -1, 1), range, quadrant, isBlocking, markVisible);
     }
   }
 
   static float Slope(Vector2I tile) => (2 * tile.Y - 1) / (float)(2 * tile.X);
   static bool IsSymmetric(Row row, Vector2I tile) => tile.Y >= row.Depth * row.StartSlope && tile.Y <= row.Depth * row.EndSlope;
 
-  void Scan(Row row, int maxDepth)
+  static void Scan(
+    Row row,
+    int maxDepth,
+    Quadrant quadrant,
+    Func<Vector2I, bool> isBlocking,
+    Action<Vector2I> markVisible
+  )
   {
     if (row.Depth > maxDepth) return;
 
@@ -78,7 +83,7 @@ public class Shadowcasting(Quadrant quadrant, Func<Vector2I, bool> isBlocking, A
         {
           Row nextRow = row.Next();
           nextRow.EndSlope = Slope(tile);
-          Scan(nextRow, maxDepth);
+          Scan(nextRow, maxDepth, quadrant, isBlocking, markVisible);
         }
       }
 
@@ -88,7 +93,7 @@ public class Shadowcasting(Quadrant quadrant, Func<Vector2I, bool> isBlocking, A
 
     if (!isWall)
     {
-      Scan(row.Next(), maxDepth);
+      Scan(row.Next(), maxDepth, quadrant, isBlocking, markVisible);
     }
   }
 }

@@ -4,8 +4,23 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <RootNamespace>RoguelikeCrawler</RootNamespace>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <SkipTests Condition="'$(SKIP_TESTS)' != ''">true</SkipTests>
+    <RunTests>false</RunTests>
   </PropertyGroup>
-  <ItemGroup>
+
+  <PropertyGroup Condition="('$(Configuration)' == 'Debug' or '$(Configuration)' == 'ExportDebug') and '$(SkipTests)' != 'true'">
+    <RunTests>true</RunTests>
+    <DefineConstants>$(DefineConstants);RUN_TESTS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(RunTests)' == 'true'">
+    <PackageReference Include="Chickensoft.GoDotTest" Version="2.0.46" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(RunTests)' != 'true'">
     <Compile Remove="Tests/**/*.cs" />
+    <None Remove="Tests/**/*" />
+    <EmbeddedResource Remove="Tests/**/*" />
   </ItemGroup>
 </Project>

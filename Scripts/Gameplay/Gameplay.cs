@@ -1,8 +1,18 @@
 using Godot;
 
+#if RUN_TESTS
+using System.Reflection;
+
+using Chickensoft.GoDotTest;
+#endif
+
 public partial class Gameplay : Godot.Node
 {
   [Export] GameplayCamera Camera;
+
+#if RUN_TESTS
+  public TestEnvironment Environment = default!;
+#endif
 
   public static Avatar Avatar { get; private set; }
   public static Dungeon Dungeon { get; private set; }
@@ -15,6 +25,15 @@ public partial class Gameplay : Godot.Node
 
   public override void _Ready()
   {
+#if RUN_TESTS
+    Environment = TestEnvironment.From(OS.GetCmdlineArgs());
+    if (Environment.ShouldRunTests)
+    {
+      CallDeferred("RunTests");
+      return;
+    }
+#endif
+
     Random = new RandomNumberGenerator
     {
       Seed = "random".Hash()
@@ -31,6 +50,11 @@ public partial class Gameplay : Godot.Node
     CurrentLevel.InsertActor(Avatar);
     CurrentLevel.Update();
   }
+
+#if RUN_TESTS
+  private void RunTests()
+    => _ = GoTest.RunTests(Assembly.GetExecutingAssembly(), this, Environment);
+#endif
 
   protected void CreateDungeon()
   {
